@@ -1,6 +1,60 @@
 /**
  * Pivot Table Default Sample.
  */
+ var fn_determina = function (args) {
+  var newRow = [];
+  var rowIndex = pivotObj.engineModule.pivotValues.length;
+  var length =
+      pivotObj.engineModule.pivotValues[
+      pivotObj.engineModule.pivotValues.length - 1
+          ].length;
+  var gTotal =
+      pivotObj.engineModule.pivotValues[
+      pivotObj.engineModule.pivotValues.length - 1
+          ];
+  for (var i = 0; i < length - 1; i++) {
+      if (i !== 0) {
+          for (var j = 0; j < data.length; j++) {
+              if (data[j].cue_nombre == gTotal[i].columnHeaders) {
+                  newRow.push({
+                      axis: 'value',
+                      value: data[j].saldoinicial,
+                      actualValue: data[j].saldoinicial,
+                      formattedText: data[j].saldoinicial,
+                      isGrandSum: false,
+                      isSum: true,
+                      showSubTotals: true,
+                      colIndex: i,
+                      rowIndex: rowIndex,
+                      rowHeaders: 'New Row',
+                      actualText: gTotal[i].actualText,
+                      columnHeaders: gTotal[i].columnHeaders,
+                  });
+              }
+          }
+      } else {
+          newRow.push({
+              axis: 'row',
+              formattedText: 'SALDO INICIAL',
+              colIndex: i,
+              rowIndex: rowIndex,
+              isDrilled: false,
+              level: 0,
+              hasChild: false,
+              valueSort: {
+                  'SALDO INICIAL': 1,
+                  levelName: 'SALDO INICIAL',
+              },
+          });
+      }
+  }
+  pivotObj.engineModule.valueContent.splice(0, 0, newRow);
+  pivotObj.engineModule.pivotValues.splice(
+      pivotObj.engineModule.valueContent[0][0].rowIndex,
+      0,
+      newRow
+  );
+}
 
 ej.base.enableRipple(false);
 var pivotObj = new ej.pivotview.PivotView({
@@ -22,56 +76,7 @@ var pivotObj = new ej.pivotview.PivotView({
   },
   width: '100%',
   height: 290,
-  enginePopulated: function (args) {
-    var newRow = [];
-    var rowIndex = pivotObj.engineModule.pivotValues.length;
-    var length =
-      pivotObj.engineModule.pivotValues[
-        pivotObj.engineModule.pivotValues.length - 1
-      ].length;
-    var gTotal =
-      pivotObj.engineModule.pivotValues[
-        pivotObj.engineModule.pivotValues.length - 1
-      ];
-    for (var i = 0; i < length; i++) {
-      if (i !== 0) {
-        newRow.push({
-          axis: 'value',
-          value: 5,
-          actualValue: 5,
-          formattedText: '5',
-          isGrandSum: false,
-          isSum: true,
-          showSubTotals: true,
-          colIndex: i,
-          rowIndex: rowIndex,
-          rowHeaders: 'New Row',
-          actualText: gTotal[i].actualText,
-          columnHeaders: gTotal[i].columnHeaders,
-        });
-      } else {
-        newRow.push({
-          axis: 'row',
-          formattedText: 'New Row',
-          colIndex: i,
-          rowIndex: rowIndex,
-          isDrilled: false,
-          level: 0,
-          hasChild: false,
-          valueSort: {
-            'New Row': 1,
-            levelName: 'New Row',
-          },
-        });
-      }
-    }
-    pivotObj.engineModule.valueContent.splice(0, 0, newRow);
-    pivotObj.engineModule.pivotValues.splice(
-      pivotObj.engineModule.valueContent[0][0].rowIndex,
-      0,
-      newRow
-    );
-  },
+  enginePopulated: this.fn_determina,
   gridSettings: { columnWidth: 140 },
   displayOption: { view: 'Both' },
   chartSettings: {
